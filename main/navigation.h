@@ -8,6 +8,8 @@ enum class ScreenId : uint8_t
     Clock,
     Settings,
     Brightness,
+    Apps,
+    Stopwatch,
     Count,          
     None = 0xFF     
 };

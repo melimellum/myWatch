@@ -3,6 +3,8 @@
 #include "clock_screen_one.h"
 #include "settings_screen.h"
 #include "brightness_screen.h"
+#include "apps_screen.h"
+#include "stopwatch_screen.h"
 
 namespace
 {
@@ -12,14 +14,19 @@ namespace
     {
         lv_obj_t *(*create)();   
         ScreenId swipeLeft;      
-        ScreenId swipeRight;     
+        ScreenId swipeRight;    
+        ScreenId swipeUp;        
+        ScreenId swipeDown;       
         lv_obj_t *obj;           
     };
 
     Screen screens[] = {
-        /* Clock      */ { createClockScreen,      ScreenId::Settings, ScreenId::None,     nullptr },
-        /* Settings   */ { createSettingsScreen,   ScreenId::None,     ScreenId::Clock,    nullptr },
-        /* Brightness */ { createBrightnessScreen, ScreenId::None,     ScreenId::Settings, nullptr },
+        //                                 left                right               up              down            obj
+        /* Clock      */ { createClockScreen,      ScreenId::Settings, ScreenId::None,     ScreenId::Apps, ScreenId::None,  nullptr },
+        /* Settings   */ { createSettingsScreen,   ScreenId::None,     ScreenId::Clock,    ScreenId::None, ScreenId::None,  nullptr },
+        /* Brightness */ { createBrightnessScreen, ScreenId::None,     ScreenId::Settings, ScreenId::None, ScreenId::None,  nullptr },
+        /* Apps       */ { createAppsScreen,       ScreenId::None,     ScreenId::None,     ScreenId::None, ScreenId::Clock, nullptr },
+        /* Stopwatch  */ { createStopwatchScreen,  ScreenId::None,     ScreenId::Apps,     ScreenId::None, ScreenId::None,  nullptr },
     };
 
     static_assert(sizeof(screens) / sizeof(screens[0]) == static_cast<size_t>(ScreenId::Count),
@@ -43,13 +50,13 @@ namespace
         lv_dir_t dir = lv_indev_get_gesture_dir(indev);
         ScreenId target = ScreenId::None;
 
-        if (dir == LV_DIR_LEFT)
+        switch (dir)
         {
-            target = get(current).swipeLeft;
-        }
-        else if (dir == LV_DIR_RIGHT)
-        {
-            target = get(current).swipeRight;
+        case LV_DIR_LEFT:   target = get(current).swipeLeft;  break;
+        case LV_DIR_RIGHT:  target = get(current).swipeRight; break;
+        case LV_DIR_TOP:    target = get(current).swipeUp;    break;
+        case LV_DIR_BOTTOM: target = get(current).swipeDown;  break;
+        default: break;
         }
 
         if (target != ScreenId::None)
@@ -110,6 +117,14 @@ void navigateTo(ScreenId id, lv_dir_t direction)
 
     case LV_DIR_RIGHT:
         lv_screen_load_anim(obj, LV_SCREEN_LOAD_ANIM_MOVE_RIGHT, ANIM_MS, 0, false);
+        break;
+
+    case LV_DIR_TOP:
+        lv_screen_load_anim(obj, LV_SCREEN_LOAD_ANIM_MOVE_TOP, ANIM_MS, 0, false);
+        break;
+
+    case LV_DIR_BOTTOM:
+        lv_screen_load_anim(obj, LV_SCREEN_LOAD_ANIM_MOVE_BOTTOM, ANIM_MS, 0, false);
         break;
 
     default:
