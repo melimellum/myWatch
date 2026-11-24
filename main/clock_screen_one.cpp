@@ -73,9 +73,9 @@ namespace
     }
 }
 
-void createClockScreen()
+lv_obj_t *createClockScreen()
 {
-    lv_obj_t *screen = lv_screen_active();
+    lv_obj_t *screen = lv_obj_create(nullptr);
 
     lv_obj_set_style_bg_color(screen, lv_color_hex(COLOR_BACKGROUND), 0);
     lv_obj_set_style_bg_opa(screen, LV_OPA_COVER, 0);
@@ -85,16 +85,15 @@ void createClockScreen()
     lv_obj_align(timeRow, LV_ALIGN_CENTER, 0, 0);
 
     lv_obj_set_flex_align(timeRow,
-        LV_FLEX_ALIGN_CENTER,   
-        LV_FLEX_ALIGN_END,      
-        LV_FLEX_ALIGN_CENTER);  
+        LV_FLEX_ALIGN_CENTER,
+        LV_FLEX_ALIGN_END,
+        LV_FLEX_ALIGN_CENTER);
 
     timeLabel = createLabel(timeRow, &science_gothic_48, COLOR_TEXT, "--:--");
 
     secondsLabel = createLabel(timeRow, &science_gothic_18, COLOR_TEXT, "--");
     lv_obj_set_width(secondsLabel, SECONDS_LABEL_WIDTH);
     lv_obj_set_style_text_align(secondsLabel, LV_TEXT_ALIGN_LEFT, 0);
-
     lv_obj_set_style_translate_y(secondsLabel, -5, 0);
 
     lv_obj_t *infoRow = createRow(screen, 12);
@@ -106,6 +105,8 @@ void createClockScreen()
 
     lastSeconds = lastMinutes = lastHours = -1;
     lastDay = lastMonth = lastWeekday = -1;
+
+    return screen;
 }
 
 void updateClockScreen(const RTC_Time *time)

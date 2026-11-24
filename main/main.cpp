@@ -5,6 +5,8 @@
 
 #include "rtc.h"
 #include "clock_screen_one.h"
+#include "navigation.h"
+#include "brightness_screen.h"
 
 static const char *TAG = "WATCH";
 
@@ -97,7 +99,7 @@ static void clockTask(void *)
 extern "C" void app_main(void)
 {
     bsp_display_start();
-    bsp_display_brightness_set(DISPLAY_BRIGHTNESS);
+    applyBrightness(DISPLAY_BRIGHTNESS); 
 
     esp_err_t err = setupRTC();
     if (err != ESP_OK)
@@ -106,7 +108,7 @@ extern "C" void app_main(void)
     }
 
     bsp_display_lock(0);
-    createClockScreen();
+    navigationInit();
     bsp_display_unlock();
 
     BaseType_t ok = xTaskCreate(clockTask, "clock", TASK_STACK_BYTES,
